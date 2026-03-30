@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './search-form.scss';
 import ResortsSelect from './resorts-select/resorts-select';
 import GuestsSelect from './guests-select/guests-select';
@@ -24,16 +24,41 @@ const SearchIcon = () => (
   </svg>
 );
 
+function readUrlParams() {
+  const p = new URLSearchParams(window.location.search);
+  return {
+    skiSiteId: p.has('resort') ? Number(p.get('resort')) : null,
+    groupSize: p.has('guests') ? Number(p.get('guests')) : null,
+    startDate: p.has('from') ? dayjs(p.get('from')).toDate() : null,
+    endDate: p.has('to') ? dayjs(p.get('to')).toDate() : null,
+  };
+}
+
+function syncUrlParams(skiSiteId: number, groupSize: number, startDate: Date | null, endDate: Date | null) {
+  const p = new URLSearchParams();
+  p.set('resort', String(skiSiteId));
+  p.set('guests', String(groupSize));
+  if (startDate) p.set('from', dayjs(startDate).format('YYYY-MM-DD'));
+  if (endDate) p.set('to', dayjs(endDate).format('YYYY-MM-DD'));
+  history.replaceState(null, '', `?${p.toString()}`);
+}
+
 const SearchForm: React.FC = () => {
-  const [skiSiteId, setSkiSiteId] = useState<number>(1);
-  const [groupSize, setGroupSize] = useState<number>(1);
-  const [startDate, setStartDate] = useState<Date | null>(dayjs().toDate());
-  const [endDate, setEndDate] = useState<Date | null>(dayjs().add(10, 'day').toDate());
+  const initial = readUrlParams();
+  const [skiSiteId, setSkiSiteId] = useState<number>(initial.skiSiteId ?? 1);
+  const [groupSize, setGroupSize] = useState<number>(initial.groupSize ?? 1);
+  const [startDate, setStartDate] = useState<Date | null>(initial.startDate ?? dayjs().toDate());
+  const [endDate, setEndDate] = useState<Date | null>(initial.endDate ?? dayjs().add(10, 'day').toDate());
   const [validationError, setValidationError] = useState<string | null>(null);
 
   const [searchHotels, { isLoading }] = useSearchHotelsMutation();
 
-  const handleSearch = () => {
+  // Keep URL in sync whenever filters change
+  useEffect(() => {
+    syncUrlParams(skiSiteId, groupSize, startDate, endDate);
+  }, [skiSiteId, groupSize, startDate, endDate]);
+
+  const handleSearch = useCallback(() => {
     setValidationError(null);
 
     const params = {
@@ -50,7 +75,7 @@ const SearchForm: React.FC = () => {
     }
 
     searchHotels(parsed.data);
-  };
+  }, [skiSiteId, groupSize, startDate, endDate, searchHotels]);
 
   return (
     <div style={{ position: 'relative' }}>

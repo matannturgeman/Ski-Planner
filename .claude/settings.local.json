@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs cat:*)",
+      "Bash(npm install:*)",
+      "Bash(curl:*)",
+      "Bash(node_modules/.bin/eslint --version)",
+      "Bash(pnpm nx:*)",
+      "Bash(timeout 30 pnpm dev:api)",
+      "Bash(timeout 45 pnpm dev:api)",
+      "Bash(timeout 60 pnpm dev:api)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); accs=d.get\\(''''body'''',{}\\).get\\(''''accommodations'''',[]\\); print\\(f''''{len\\(accs\\)} results''''\\); [print\\(a.get\\(''''HotelName''''\\), a.get\\(''''HotelInfo'''',{}\\).get\\(''''Beds''''\\)\\) for a in accs]\")",
+      "Bash(for gs:*)",
+      "Bash(do echo:*)",
+      "Bash(python3 -c \":*)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(''''7d:'''', len\\(d[''''body''''].get\\(''''accommodations'''',[]\\)\\)\\)\" curl -s -X POST \"https://gya7b1xubh.execute-api.eu-west-2.amazonaws.com/default/HotelsSimulator\" -H \"Content-Type: application/json\" -d '{\"\"\"\"query\"\"\"\":{\"\"\"\"ski_site\"\"\"\":1,\"\"\"\"from_date\"\"\"\":\"\"\"\"03/04/2025\"\"\"\",\"\"\"\"to_date\"\"\"\":\"\"\"\"17/04/2025\"\"\"\",\"\"\"\"group_size\"\"\"\":2}}')",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(''''14d:'''', len\\(d[''''body''''].get\\(''''accommodations'''',[]\\)\\)\\)\" curl -s -X POST \"https://gya7b1xubh.execute-api.eu-west-2.amazonaws.com/default/HotelsSimulator\" -H \"Content-Type: application/json\" -d '{\"\"\"\"query\"\"\"\":{\"\"\"\"ski_site\"\"\"\":1,\"\"\"\"from_date\"\"\"\":\"\"\"\"03/04/2025\"\"\"\",\"\"\"\"to_date\"\"\"\":\"\"\"\"24/04/2025\"\"\"\",\"\"\"\"group_size\"\"\"\":2}}')",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(''''21d:'''', len\\(d[''''body''''].get\\(''''accommodations'''',[]\\)\\)\\)\")",
+      "Bash(netstat -ano)",
+      "Bash(findstr :3000)",
+      "Bash(taskkill:*)",
+      "Bash(cmd /c \"taskkill /PID 22136 /F\")",
+      "Bash(grep -r \"unused\\\\|TODO\\\\|FIXME\\\\|XXX\\\\|HACK\" /c/Dev/WeSki-FullStack-Assignment/weski-fullstack-assignment/weski-hotels-app/src --include=*.tsx --include=*.ts)",
+      "Bash(ls:*)",
+      "Bash(npm exec:*)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\({k:d.get\\(k\\) for k in [''''type'''',''''scripts'''']}, indent=2\\)\\)\")",
+      "Bash(find C:/Dev/WeSki-FullStack-Assignment/weski-fullstack-assignment/weski-api/apps/api/src -name *.filter.ts -o -name *.exception*)",
+      "Bash(python -c \"import sys; print\\(sys.stdin.read\\(\\)\\)\")",
+      "Bash(find C:/Dev/WeSki-FullStack-Assignment/weski-fullstack-assignment/weski-api -path */server-data-access* -name *.ts)",
+      "Bash(find C:/Dev/WeSki-FullStack-Assignment/weski-fullstack-assignment/weski-api/libs -name *.ts)",
+      "Bash(node:*)",
+      "Bash(python -c \"import sys,json; d=json.loads\\(sys.stdin.read\\(\\)\\); print\\(json.dumps\\(d.get\\(''''targets'''',{}\\).get\\(''''serve'''',{}\\), indent=2\\)\\)\")",
+      "Bash(npm run:*)"
+    ]
+  }
+}

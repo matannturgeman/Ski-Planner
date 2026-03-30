@@ -21,7 +21,7 @@ export class HotelsController {
     if (!parsed.success) {
       res.status(400).json({
         message: 'Invalid search parameters',
-        errors: parsed.error.errors,
+        errors: parsed.error.issues,
       });
       return;
     }
