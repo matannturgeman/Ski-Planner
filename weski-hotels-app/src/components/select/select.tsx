@@ -7,13 +7,14 @@ interface Props {
     onChange: (value: string) => void;
     value: string;
     options: {label: string; value: string}[];
+    ariaLabel?: string;
 }
 
-const Select: React.FC<Props> = ({onChange, value, options}) => {
+const Select: React.FC<Props> = ({onChange, value, options, ariaLabel}) => {
     return (
         <SelectRaddix.Root onValueChange={value => onChange(value)} value={value}>
-            <SelectRaddix.Trigger className="select-trigger">
-                <SelectRaddix.Value placeholder="SelectRaddix a resort" />
+            <SelectRaddix.Trigger className="select-trigger" aria-label={ariaLabel}>
+                <SelectRaddix.Value />
             </SelectRaddix.Trigger>
 
             <SelectRaddix.Portal>

@@ -19,26 +19,30 @@ interface Props {
 }
 
 const LocationIcon = () => (
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true" focusable="false">
     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
     <circle cx="12" cy="10" r="3"/>
   </svg>
 );
 
 const SkiIcon = () => (
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true" focusable="false">
     <path d="M3 17l4-8 4 4 4-6 4 10"/>
   </svg>
 );
 
 function renderStars(count: number) {
-  return Array.from({ length: 5 }, (_, i) => (
-    <span key={i} className={`star ${i < count ? 'star--filled' : 'star--empty'}`}>★</span>
-  ));
+  return (
+    <span aria-label={`${count} out of 5 stars`}>
+      {Array.from({ length: 5 }, (_, i) => (
+        <span key={i} className={`star ${i < count ? 'star--filled' : 'star--empty'}`} aria-hidden="true">★</span>
+      ))}
+    </span>
+  );
 }
 
 const HotelCardSkeleton = () => (
-  <div className="hotel-card hotel-card--skeleton">
+  <div className="hotel-card hotel-card--skeleton" aria-hidden="true">
     <div className="hotel-card-image skeleton-box" />
     <div className="hotel-card-body">
       <div className="skeleton-line skeleton-line--title" />
@@ -81,9 +85,9 @@ const HotelImage: React.FC<{ src: string | undefined; alt: string }> = ({ src, a
 };
 
 const HotelCard: React.FC<{ room: HotelRoom; resortName: string }> = ({ room, resortName }) => (
-  <div className="hotel-card">
+  <article className="hotel-card" aria-label={`${room.hotel_name}, ${resortName}`}>
     <div className="hotel-card-image">
-      <HotelImage src={room.image_url} alt={room.hotel_name} />
+      <HotelImage src={room.image_url} alt={`${room.hotel_name} exterior`} />
     </div>
     <div className="hotel-card-body">
       <div className="hotel-card-top">
@@ -105,14 +109,14 @@ const HotelCard: React.FC<{ room: HotelRoom; resortName: string }> = ({ room, re
       <div className="hotel-card-footer">
         <span className="hotel-card-capacity">Sleeps {room.beds}</span>
         <div className="hotel-card-price">
-          <span className="hotel-card-price-amount">
+          <span className="hotel-card-price-amount" aria-label={`£${room.price.toLocaleString('en-GB', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} per person`}>
             £{room.price.toLocaleString('en-GB', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
           </span>
-          <span className="hotel-card-price-label">/per person</span>
+          <span className="hotel-card-price-label" aria-hidden="true">/per person</span>
         </div>
       </div>
     </div>
-  </div>
+  </article>
 );
 
 const HotelResults: React.FC<Props> = ({ results, isStreaming, error, lastSearch, lastSearchParams }) => {
@@ -120,7 +124,7 @@ const HotelResults: React.FC<Props> = ({ results, isStreaming, error, lastSearch
 
   if (error) {
     return (
-      <div className="hotel-results-message hotel-results-error">
+      <div className="hotel-results-message hotel-results-error" role="alert" aria-live="assertive">
         {error}
         {lastSearchParams && (
           <Button
@@ -128,6 +132,7 @@ const HotelResults: React.FC<Props> = ({ results, isStreaming, error, lastSearch
             size="sm"
             onClick={() => searchHotels(lastSearchParams)}
             disabled={isLoading}
+            aria-label="Try the search again"
           >
             Try again
           </Button>
@@ -141,10 +146,10 @@ const HotelResults: React.FC<Props> = ({ results, isStreaming, error, lastSearch
   const showSkeletons = isStreaming && results.length === 0;
 
   return (
-    <div className="hotel-results">
+    <section className="hotel-results" aria-label="Hotel search results" aria-live="polite" aria-busy={isStreaming}>
       <div className="hotel-results-header">
         <h2 className="hotel-results-title">Select your ski trip</h2>
-        <p className="hotel-results-subtitle">
+        <p className="hotel-results-subtitle" role="status" aria-atomic="true">
           {isStreaming ? (
             <span className="hotel-results-loading">
               {results.length > 0 ? `${results.length} found so far…` : 'Searching…'}
@@ -159,7 +164,7 @@ const HotelResults: React.FC<Props> = ({ results, isStreaming, error, lastSearch
       </div>
 
       {results.length === 0 && !isStreaming && (
-        <div className="hotel-results-empty">No hotels found for your search.</div>
+        <div className="hotel-results-empty" role="status">No hotels found for your search.</div>
       )}
 
       <div className="hotel-results-list">
@@ -178,7 +183,7 @@ const HotelResults: React.FC<Props> = ({ results, isStreaming, error, lastSearch
           />
         ))}
       </div>
-    </div>
+    </section>
   );
 };
 

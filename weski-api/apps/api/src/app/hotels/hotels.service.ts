@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { from, merge, Observable } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { from, merge, Observable, of } from 'rxjs';
+import { catchError, filter } from 'rxjs/operators';
 import {
   HOTELS_PROVIDERS,
   HotelRoom,
@@ -39,7 +39,7 @@ export class HotelsService {
           provider
             .searchRooms({ ...params, group_size: gs })
             .then((rooms) => rooms.filter((r) => r.beds >= dto.group_size)),
-        ),
+        ).pipe(catchError(() => of([]))),
       ),
     );
 

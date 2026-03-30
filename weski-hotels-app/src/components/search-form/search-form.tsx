@@ -9,7 +9,7 @@ import { HotelSearchRequestSchema } from '../../types/hotels.types';
 import { Button } from '../../design-system';
 
 const CalendarIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true" focusable="false">
     <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
     <line x1="16" y1="2" x2="16" y2="6"/>
     <line x1="8" y1="2" x2="8" y2="6"/>
@@ -18,7 +18,7 @@ const CalendarIcon = () => (
 );
 
 const SearchIcon = () => (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true" focusable="false">
     <circle cx="11" cy="11" r="8"/>
     <line x1="21" y1="21" x2="16.65" y2="16.65"/>
   </svg>
@@ -79,7 +79,12 @@ const SearchForm: React.FC = () => {
 
   return (
     <div style={{ position: 'relative' }}>
-      <div className="search-form">
+      <form
+        className="search-form"
+        role="search"
+        aria-label="Search ski hotels"
+        onSubmit={(e) => { e.preventDefault(); handleSearch(); }}
+      >
         {/* Destination */}
         <div className="search-form-segment">
           <ResortsSelect value={skiSiteId} onChange={setSkiSiteId} />
@@ -100,8 +105,9 @@ const SearchForm: React.FC = () => {
             enableTabLoop={false}
             placeholderText="Check-in"
             dateFormat="MMM d"
+            inputProps={{ 'aria-label': 'Check-in date' }}
           />
-          <span className="date-separator">–</span>
+          <span className="date-separator" aria-hidden="true">–</span>
           <DatePicker
             className="search-form-date-picker"
             selected={endDate}
@@ -110,24 +116,28 @@ const SearchForm: React.FC = () => {
             placeholderText="Check-out"
             minDate={startDate ?? undefined}
             dateFormat="MMM d"
+            inputProps={{ 'aria-label': 'Check-out date' }}
           />
         </div>
 
         {/* Search button */}
         <Button
+          type="submit"
           variant="primary"
           className="search-form-search-btn"
-          onClick={handleSearch}
           disabled={isLoading}
+          aria-label={isLoading ? 'Searching for hotels' : 'Search hotels'}
         >
           <SearchIcon />
           {isLoading ? 'Searching...' : 'Search'}
         </Button>
-      </div>
+      </form>
 
-      {validationError && (
-        <span className="search-form-error">{validationError}</span>
-      )}
+      <div role="alert" aria-live="assertive" aria-atomic="true">
+        {validationError && (
+          <span className="search-form-error">{validationError}</span>
+        )}
+      </div>
     </div>
   );
 };

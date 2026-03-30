@@ -5,10 +5,12 @@ import SearchForm from "../search-form/search-form";
 
 const NavBar: React.FC = () => {
     return (
-        <div className="nav-bar">
+        <header className="nav-bar">
             <WeSkiLogo />
-            <SearchForm />
-        </div>
+            <nav aria-label="Search navigation">
+                <SearchForm />
+            </nav>
+        </header>
     );
 }
 

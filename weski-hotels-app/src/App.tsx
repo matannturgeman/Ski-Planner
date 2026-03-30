@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import NavBar from './components/navbar/nav-bar';
 import HotelResults from './components/hotel-results/hotel-results';
 import { useAppSelector } from './store';
@@ -9,10 +9,18 @@ const App: React.FC = () => {
     (state) => state.hotels,
   );
 
+  useEffect(() => {
+    if (lastSearch) {
+      document.title = `${lastSearch.resortName} — WeSki Ski Hotels`;
+    } else {
+      document.title = 'WeSki — Find Your Perfect Ski Hotel';
+    }
+  }, [lastSearch]);
+
   return (
     <div className="app">
       <NavBar />
-      <main className="app-main">
+      <main id="main-content" className="app-main" tabIndex={-1}>
         <HotelResults
           results={results}
           isStreaming={isStreaming}

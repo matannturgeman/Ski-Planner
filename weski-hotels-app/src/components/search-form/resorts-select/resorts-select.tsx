@@ -7,7 +7,7 @@ interface Props {
 }
 
 const MountainIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ flexShrink: 0, color: '#6b7280' }}>
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ flexShrink: 0, color: '#6b7280' }} aria-hidden="true" focusable="false">
     <polygon points="3 20 21 20 12 4"/>
     <polyline points="8 14 12 10 16 14"/>
   </svg>
@@ -20,6 +20,7 @@ const ResortsSelect: React.FC<Props> = ({ onChange, value }) => {
       <Select
         onChange={(resortId) => onChange(Number(resortId))}
         value={value.toString()}
+        ariaLabel="Ski resort destination"
         options={RESORTS.map((resort) => ({
           label: resort.name,
           value: resort.id.toString(),

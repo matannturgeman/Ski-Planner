@@ -30,7 +30,14 @@
       "Bash(find C:/Dev/WeSki-FullStack-Assignment/weski-fullstack-assignment/weski-api/libs -name *.ts)",
       "Bash(node:*)",
       "Bash(python -c \"import sys,json; d=json.loads\\(sys.stdin.read\\(\\)\\); print\\(json.dumps\\(d.get\\(''''targets'''',{}\\).get\\(''''serve'''',{}\\), indent=2\\)\\)\")",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(xargs grep:*)",
+      "Bash(find C:/Dev/WeSki-FullStack-Assignment/weski-fullstack-assignment/weski-api/libs -name jest.config*)",
+      "Bash(for f:*)",
+      "Bash(do)",
+      "Bash(echo \"=== $f ===\")",
+      "Read(//c/Dev/WeSki-FullStack-Assignment/weski-fullstack-assignment/weski-api/**)",
+      "Bash(done)"
     ]
   }
 }

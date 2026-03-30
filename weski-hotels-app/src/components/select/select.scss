@@ -20,6 +20,12 @@
     box-shadow: none;
   }
 
+  &:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
   svg {
     color: var(--color-text-secondary);
     width: 14px;

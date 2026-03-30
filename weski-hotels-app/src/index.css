@@ -22,3 +22,34 @@ body {
 * {
   box-sizing: border-box;
 }
+
+/* ── Skip navigation link (accessibility) ──────────────────────── */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 8px;
+  z-index: 10000;
+  padding: 8px 16px;
+  background: var(--color-primary, #1565c0);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 0 0 6px 6px;
+  text-decoration: none;
+  transition: top 0.1s ease;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* ── Global focus ring ────────────────────────────────────────── */
+:focus-visible {
+  outline: 3px solid #1565c0;
+  outline-offset: 2px;
+}
+
+/* Remove focus ring for mouse users without affecting keyboard users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
