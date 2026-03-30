@@ -6,6 +6,7 @@ import {
   WeskiExternalResponseSchema,
   type WeskiAccommodation,
 } from './weski.schemas';
+import { CacheService } from '../../../cache/cache.service';
 
 const VENDOR_TIMEOUT_MS = 10_000;
 
@@ -15,11 +16,21 @@ export class WeskiProvider implements IHotelsProvider {
   private readonly logger = new Logger(WeskiProvider.name);
   private readonly apiUrl: string;
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly cache: CacheService,
+  ) {
     this.apiUrl = this.configService.getOrThrow<string>('HOTELS_API_URL');
   }
 
   async searchRooms(params: HotelSearchParams): Promise<HotelRoom[]> {
+    const cacheKey = `hotels:weski:${params.ski_site}:${params.from_date}:${params.to_date}:${params.group_size}`;
+    const cached = await this.cache.get<HotelRoom[]>(cacheKey);
+    if (cached) {
+      this.logger.debug(`Cache hit for ${cacheKey}`);
+      return cached;
+    }
+
     const requestBody = WeskiExternalRequestSchema.parse({ query: params });
 
     const controller = new AbortController();
@@ -50,9 +61,11 @@ export class WeskiProvider implements IHotelsProvider {
         return [];
       }
 
-      return parsed.data.body.accommodations.map((acc) =>
+      const rooms = parsed.data.body.accommodations.map((acc) =>
         this.normalize(acc),
       );
+      await this.cache.set(cacheKey, rooms);
+      return rooms;
     } catch (error: unknown) {
       if (error instanceof Error && error.name === 'AbortError') {
         this.logger.warn(

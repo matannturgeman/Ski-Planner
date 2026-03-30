@@ -78,6 +78,9 @@ PORT=3000
 API_PREFIX=api
 CLIENT_URL=http://localhost:5173
 HOTELS_API_URL=https://gya7b1xubh.execute-api.eu-west-2.amazonaws.com/default/HotelsSimulator
+
+# Optional — enables Redis caching with a 5-minute TTL (see Redis section below)
+# REDIS_URL=redis://localhost:6379
 ```
 
 ### Start the API
@@ -98,6 +101,49 @@ API is available at `http://localhost:3000/api`
 | `pnpm test` | Run all unit tests across the monorepo |
 | `pnpm nx run api-e2e:e2e` | Run API end-to-end tests |
 | `pnpm nx graph` | Visualise the project dependency graph |
+
+---
+
+## Redis Caching (Optional)
+
+The backend supports optional Redis caching to reduce external API calls. When enabled, each vendor × group-size combination is cached for **5 minutes** using the search parameters as the cache key.
+
+The app **does not require Redis** — if `REDIS_URL` is not set or Redis is unreachable, caching is silently skipped and everything works normally.
+
+### Start Redis with Docker
+
+```bash
+docker run -d --name weski-redis -p 6379:6379 redis:alpine
+```
+
+Then uncomment `REDIS_URL` in `weski-api/.env`:
+
+```env
+REDIS_URL=redis://localhost:6379
+```
+
+### Or use Docker Compose
+
+Create a `docker-compose.yml` at the repo root (or use it to run the full stack together):
+
+```yaml
+services:
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+```
+
+```bash
+docker compose up -d
+```
+
+To stop and remove the container:
+
+```bash
+docker compose down
+```
 
 ---
 
