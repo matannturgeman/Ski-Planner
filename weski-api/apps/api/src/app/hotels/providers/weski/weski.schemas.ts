@@ -55,7 +55,7 @@ export const WeskiExternalResponseSchema = z.object({
   statusCode: z.number(),
   body: z.object({
     success: z.string(),
-    accommodations: z.array(WeskiAccommodationSchema),
+    accommodations: z.array(WeskiAccommodationSchema).optional().default([]),
   }),
 });
 
