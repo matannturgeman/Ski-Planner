@@ -21,8 +21,8 @@ export class HotelsService {
 
   /**
    * Fans out to ALL registered vendors simultaneously, for group_size N, N+1, N+2.
-   * Emits each vendor's batch of results as soon as it resolves — Skyscanner style.
-   * Each emission is a HotelRoom[] batch ready to stream to the client.
+   * Emits each vendor's batch as soon as it resolves — Skyscanner style.
+   * Filters to rooms that can physically accommodate the requested group (beds >= group_size).
    */
   streamSearch(dto: HotelSearchDto): Observable<HotelRoom[]> {
     const groupSizes = this.expandGroupSizes(dto.group_size);
@@ -38,7 +38,7 @@ export class HotelsService {
         from(
           provider
             .searchRooms({ ...params, group_size: gs })
-            .then((rooms) => rooms.filter((r) => r.adults >= dto.group_size)),
+            .then((rooms) => rooms.filter((r) => r.beds >= dto.group_size)),
         ),
       ),
     );

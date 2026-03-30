@@ -5,11 +5,13 @@ import type { IHotelsProvider, HotelRoom } from './providers/hotels-provider.int
 import type { HotelSearchDto } from './dto/hotel-search.dto';
 
 const makeRoom = (overrides: Partial<HotelRoom> = {}): HotelRoom => ({
-  hotel_name: 'Test Hotel',
-  room_name: 'Standard Room',
-  meal: 'BB',
-  price: 100,
-  adults: 2,
+  hotel_code: 'TEST001',
+  hotel_name: 'Test Chalet',
+  stars: 4,
+  beds: 4,
+  price: 299.99,
+  image_url: 'https://example.com/img.jpg',
+  ski_lift_distance: '200m',
   ...overrides,
 });
 
@@ -49,72 +51,57 @@ describe('HotelsService', () => {
       searchRooms: jest.fn().mockResolvedValue([]),
     };
     const service = new HotelsService([mockProvider, secondProvider]);
-    const dto = makeDto({ group_size: 1 });
 
-    await lastValueFrom(service.streamSearch(dto).pipe(toArray()));
+    await lastValueFrom(service.streamSearch(makeDto()).pipe(toArray()));
 
-    // Each provider is called for 3 group sizes
     expect(mockProvider.searchRooms).toHaveBeenCalledTimes(3);
     expect(secondProvider.searchRooms).toHaveBeenCalledTimes(3);
   });
 
-  it('emits rooms as they arrive (one emission per provider call that returns data)', async () => {
-    const rooms = [makeRoom({ adults: 2, price: 150 })];
-    mockProvider.searchRooms.mockResolvedValue(rooms);
+  it('emits rooms from each group size call that returns data', async () => {
+    mockProvider.searchRooms.mockResolvedValue([makeRoom({ beds: 2 })]);
 
     const service = new HotelsService([mockProvider]);
-    const dto = makeDto({ group_size: 2 });
+    const batches = await lastValueFrom(service.streamSearch(makeDto({ group_size: 2 })).pipe(toArray()));
 
-    const batches = await lastValueFrom(service.streamSearch(dto).pipe(toArray()));
-
-    expect(batches.length).toBe(3); // 3 group sizes, each returns rooms
+    expect(batches.length).toBe(3);
     expect(batches.flat()).toHaveLength(3);
   });
 
-  it('filters out rooms where adults < group_size', async () => {
+  it('filters out rooms where beds < group_size', async () => {
     mockProvider.searchRooms
-      .mockResolvedValueOnce([makeRoom({ adults: 2 })]) // group_size=2 → keep
-      .mockResolvedValueOnce([makeRoom({ adults: 1 })]) // group_size=3 → filter out (adults < 2)
-      .mockResolvedValueOnce([makeRoom({ adults: 4 })]) // group_size=4 → keep
-    ;
+      .mockResolvedValueOnce([makeRoom({ beds: 2 })])   // fits group of 2 ✓
+      .mockResolvedValueOnce([makeRoom({ beds: 1 })])   // too small ✗
+      .mockResolvedValueOnce([makeRoom({ beds: 4 })]); // fits ✓
 
     const service = new HotelsService([mockProvider]);
-    const dto = makeDto({ group_size: 2 });
+    const batches = await lastValueFrom(service.streamSearch(makeDto({ group_size: 2 })).pipe(toArray()));
 
-    const batches = await lastValueFrom(service.streamSearch(dto).pipe(toArray()));
-    const allRooms = batches.flat();
-
-    expect(allRooms.every((r) => r.adults >= 2)).toBe(true);
-    expect(allRooms).toHaveLength(2);
+    expect(batches.flat().every((r) => r.beds >= 2)).toBe(true);
+    expect(batches.flat()).toHaveLength(2);
   });
 
   it('does not emit empty batches', async () => {
     mockProvider.searchRooms
-      .mockResolvedValueOnce([]) // empty — should not be emitted
-      .mockResolvedValueOnce([makeRoom({ adults: 3 })])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([makeRoom({ beds: 3 })])
       .mockResolvedValueOnce([]);
 
     const service = new HotelsService([mockProvider]);
-    const dto = makeDto({ group_size: 2 });
-
-    const batches = await lastValueFrom(service.streamSearch(dto).pipe(toArray()));
+    const batches = await lastValueFrom(service.streamSearch(makeDto()).pipe(toArray()));
 
     expect(batches).toHaveLength(1);
   });
 
   it('continues streaming when one provider call fails', async () => {
     mockProvider.searchRooms
-      .mockRejectedValueOnce(new Error('network error')) // first call fails
-      .mockResolvedValueOnce([makeRoom({ adults: 3 })]) // second succeeds
-      .mockResolvedValueOnce([makeRoom({ adults: 4 })]) // third succeeds
-    ;
+      .mockRejectedValueOnce(new Error('network error'))
+      .mockResolvedValueOnce([makeRoom({ beds: 3 })])
+      .mockResolvedValueOnce([makeRoom({ beds: 4 })]);
 
     const service = new HotelsService([mockProvider]);
-    const dto = makeDto({ group_size: 2 });
+    const batches = await lastValueFrom(service.streamSearch(makeDto()).pipe(toArray()));
 
-    const batches = await lastValueFrom(service.streamSearch(dto).pipe(toArray()));
-
-    // Stream should still complete with results from successful calls
     expect(batches.flat().length).toBeGreaterThan(0);
   });
 });

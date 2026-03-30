@@ -47,14 +47,14 @@
   border: 1px solid #fecaca;
 }
 
-/* Vertical list */
 .hotel-results-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-/* Horizontal hotel card */
+/* ── Hotel Card ────────────────────────────────── */
+
 .hotel-card {
   display: flex;
   background: #ffffff;
@@ -71,23 +71,21 @@
 .hotel-card-image {
   flex-shrink: 0;
   width: 215px;
+  min-height: 150px;
 }
 
-.hotel-card-image-placeholder {
+.hotel-card-img {
   width: 100%;
   height: 100%;
-  min-height: 140px;
-  background: linear-gradient(135deg, #1e40af 0%, #1565c0 40%, #0ea5e9 100%);
-  position: relative;
+  object-fit: cover;
+  display: block;
+}
 
-  &::after {
-    content: '⛷';
-    position: absolute;
-    bottom: 12px;
-    left: 12px;
-    font-size: 28px;
-    opacity: 0.6;
-  }
+.hotel-card-img-placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: 150px;
+  background: linear-gradient(135deg, #1e40af 0%, #1565c0 50%, #0ea5e9 100%);
 }
 
 .hotel-card-body {
@@ -96,13 +94,12 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 140px;
 }
 
 .hotel-card-top {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
 }
 
 .hotel-card-name {
@@ -114,27 +111,26 @@
 
 .hotel-card-stars {
   display: flex;
-  gap: 2px;
-  margin-top: 2px;
+  gap: 1px;
+
+  .star {
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  .star--filled { color: #f59e0b; }
+  .star--empty  { color: #d1d5db; }
 }
 
-.hotel-card-location {
+.hotel-card-location,
+.hotel-card-ski-lift {
   display: flex;
   align-items: center;
   gap: 4px;
   font-size: 13px;
   color: #6b7280;
-  margin-top: 2px;
 
-  svg {
-    flex-shrink: 0;
-  }
-}
-
-.hotel-card-room {
-  font-size: 13px;
-  color: #9ca3af;
-  margin-top: 2px;
+  svg { flex-shrink: 0; }
 }
 
 .hotel-card-footer {
@@ -167,4 +163,34 @@
 .hotel-card-price-label {
   font-size: 12px;
   color: #6b7280;
+}
+
+/* ── Skeleton ────────────────────────────────── */
+
+.hotel-card--skeleton {
+  pointer-events: none;
+}
+
+.skeleton-box {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  min-height: 150px;
+}
+
+.skeleton-line {
+  height: 14px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  margin-bottom: 10px;
+
+  &--title { width: 60%; height: 18px; }
+  &--short { width: 40%; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }

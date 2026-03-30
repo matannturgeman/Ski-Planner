@@ -10,12 +10,13 @@ export const HotelSearchRequestSchema = z.object({
 export type HotelSearchRequest = z.infer<typeof HotelSearchRequestSchema>;
 
 export const HotelRoomSchema = z.object({
+  hotel_code: z.string(),
   hotel_name: z.string(),
-  room_name: z.string(),
-  meal: z.string().optional().default(''),
+  stars: z.number().int().min(0).max(5),
+  beds: z.number().int(),
   price: z.number(),
-  adults: z.number().int(),
-  stars: z.number().int().min(1).max(5).optional(),
+  image_url: z.string().optional(),
+  ski_lift_distance: z.string().optional(),
 });
 
 export type HotelRoom = z.infer<typeof HotelRoomSchema>;

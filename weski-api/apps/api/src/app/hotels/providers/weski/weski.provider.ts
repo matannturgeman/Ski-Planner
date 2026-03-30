@@ -4,6 +4,7 @@ import type { IHotelsProvider, HotelRoom, HotelSearchParams } from '../hotels-pr
 import {
   WeskiExternalRequestSchema,
   WeskiExternalResponseSchema,
+  type WeskiAccommodation,
 } from './weski.schemas';
 
 const VENDOR_TIMEOUT_MS = 10_000;
@@ -33,7 +34,9 @@ export class WeskiProvider implements IHotelsProvider {
       });
 
       if (!response.ok) {
-        this.logger.warn(`WeSki API returned ${response.status} for group_size=${params.group_size}`);
+        this.logger.warn(
+          `WeSki API returned ${response.status} for group_size=${params.group_size}`,
+        );
         return [];
       }
 
@@ -41,14 +44,20 @@ export class WeskiProvider implements IHotelsProvider {
       const parsed = WeskiExternalResponseSchema.safeParse(raw);
 
       if (!parsed.success) {
-        this.logger.warn(`WeSki API response validation failed: ${parsed.error.message}`);
+        this.logger.warn(
+          `WeSki API response validation failed: ${parsed.error.message}`,
+        );
         return [];
       }
 
-      return Array.isArray(parsed.data) ? parsed.data : parsed.data.results;
+      return parsed.data.body.accommodations.map((acc) =>
+        this.normalize(acc),
+      );
     } catch (error: unknown) {
       if (error instanceof Error && error.name === 'AbortError') {
-        this.logger.warn(`WeSki API timed out for group_size=${params.group_size}`);
+        this.logger.warn(
+          `WeSki API timed out for group_size=${params.group_size}`,
+        );
       } else {
         this.logger.error(`WeSki API error: ${String(error)}`);
       }
@@ -56,5 +65,25 @@ export class WeskiProvider implements IHotelsProvider {
     } finally {
       clearTimeout(timeoutId);
     }
+  }
+
+  private normalize(acc: WeskiAccommodation): HotelRoom {
+    const mainImage =
+      acc.HotelDescriptiveContent.Images.find((img) => img.MainImage === 'True') ??
+      acc.HotelDescriptiveContent.Images[0];
+
+    const skiLiftDistance = acc.HotelInfo.Position.Distances.find(
+      (d) => d.type === 'ski_lift',
+    )?.distance;
+
+    return {
+      hotel_code: acc.HotelCode,
+      hotel_name: acc.HotelName,
+      stars: parseInt(acc.HotelInfo.Rating, 10) || 0,
+      beds: parseInt(acc.HotelInfo.Beds, 10) || 0,
+      price: parseFloat(acc.PricesInfo.AmountAfterTax),
+      image_url: mainImage?.URL,
+      ski_lift_distance: skiLiftDistance,
+    };
   }
 }

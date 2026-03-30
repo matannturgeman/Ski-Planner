@@ -22,41 +22,61 @@ const LocationIcon = () => (
   </svg>
 );
 
-const StarIcon = ({ filled }: { filled: boolean }) => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill={filled ? '#f59e0b' : 'none'} stroke="#f59e0b" strokeWidth="1.5">
-    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+const SkiIcon = () => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M3 17l4-8 4 4 4-6 4 10"/>
   </svg>
 );
 
 function renderStars(count: number) {
   return Array.from({ length: 5 }, (_, i) => (
-    <StarIcon key={i} filled={i < count} />
+    <span key={i} className={`star ${i < count ? 'star--filled' : 'star--empty'}`}>★</span>
   ));
 }
+
+const HotelCardSkeleton = () => (
+  <div className="hotel-card hotel-card--skeleton">
+    <div className="hotel-card-image skeleton-box" />
+    <div className="hotel-card-body">
+      <div className="skeleton-line skeleton-line--title" />
+      <div className="skeleton-line skeleton-line--short" />
+      <div className="skeleton-line skeleton-line--short" />
+    </div>
+  </div>
+);
 
 const HotelCard: React.FC<{ room: HotelRoom; resortName: string }> = ({ room, resortName }) => (
   <div className="hotel-card">
     <div className="hotel-card-image">
-      <div className="hotel-card-image-placeholder" />
+      {room.image_url ? (
+        <img src={room.image_url} alt={room.hotel_name} className="hotel-card-img" />
+      ) : (
+        <div className="hotel-card-img-placeholder" />
+      )}
     </div>
     <div className="hotel-card-body">
       <div className="hotel-card-top">
         <h3 className="hotel-card-name">{room.hotel_name}</h3>
-        {room.stars != null && (
+        {room.stars > 0 && (
           <div className="hotel-card-stars">{renderStars(room.stars)}</div>
         )}
         <div className="hotel-card-location">
           <LocationIcon />
           <span>{resortName}</span>
         </div>
-        {room.room_name && (
-          <div className="hotel-card-room">{room.room_name}{room.meal ? ` · ${room.meal}` : ''}</div>
+        {room.ski_lift_distance && (
+          <div className="hotel-card-ski-lift">
+            <SkiIcon />
+            <span>{room.ski_lift_distance} to ski lift</span>
+          </div>
         )}
       </div>
       <div className="hotel-card-footer">
-        <span className="hotel-card-capacity">Sleeps {room.adults}</span>
+        <span className="hotel-card-capacity">Sleeps {room.beds}</span>
         <div className="hotel-card-price">
-          <span className="hotel-card-price-amount">£{room.price.toLocaleString('en-GB', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+          <span className="hotel-card-price-amount">
+            £{room.price.toLocaleString('en-GB', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+          </span>
           <span className="hotel-card-price-label">/per person</span>
         </div>
       </div>
@@ -71,17 +91,23 @@ const HotelResults: React.FC<Props> = ({ results, isStreaming, error, lastSearch
 
   if (!lastSearch) return null;
 
+  const showSkeletons = isStreaming && results.length === 0;
+
   return (
     <div className="hotel-results">
       <div className="hotel-results-header">
         <h2 className="hotel-results-title">Select your ski trip</h2>
         <p className="hotel-results-subtitle">
           {isStreaming ? (
-            <span className="hotel-results-loading">Searching...</span>
+            <span className="hotel-results-loading">
+              {results.length > 0 ? `${results.length} found so far…` : 'Searching…'}
+            </span>
           ) : (
             <span>{results.length} ski trip{results.length !== 1 ? 's' : ''} option{results.length !== 1 ? 's' : ''}</span>
           )}
-          {' '}·{' '}{lastSearch.resortName}{' '}·{' '}{lastSearch.dateLabel}{' '}·{' '}{lastSearch.groupSize} {lastSearch.groupSize === 1 ? 'person' : 'people'}
+          {' · '}{lastSearch.resortName}
+          {' · '}{lastSearch.dateLabel}
+          {' · '}{lastSearch.groupSize} {lastSearch.groupSize === 1 ? 'person' : 'people'}
         </p>
       </div>
 
@@ -90,9 +116,16 @@ const HotelResults: React.FC<Props> = ({ results, isStreaming, error, lastSearch
       )}
 
       <div className="hotel-results-list">
-        {results.map((room, index) => (
+        {showSkeletons && (
+          <>
+            <HotelCardSkeleton />
+            <HotelCardSkeleton />
+            <HotelCardSkeleton />
+          </>
+        )}
+        {results.map((room) => (
           <HotelCard
-            key={`${room.hotel_name}-${room.room_name}-${index}`}
+            key={`${room.hotel_code}-${room.beds}`}
             room={room}
             resortName={lastSearch.resortName}
           />

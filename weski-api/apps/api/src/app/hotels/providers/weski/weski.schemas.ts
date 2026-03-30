@@ -12,24 +12,51 @@ export const WeskiExternalRequestSchema = z.object({
 
 export type WeskiExternalRequest = z.infer<typeof WeskiExternalRequestSchema>;
 
-/** Schema for a single hotel room returned by the WeSki external API */
-export const WeskiHotelRoomSchema = z.object({
-  hotel_name: z.string(),
-  room_name: z.string(),
-  meal: z.string().optional().default(''),
-  price: z.number(),
-  adults: z.number().int(),
+// ─── Response schemas (matching actual API shape) ────────────────────────────
+
+const WeskiImageSchema = z.object({
+  MainImage: z.string().optional(),
+  URL: z.string(),
 });
 
-export type WeskiHotelRoom = z.infer<typeof WeskiHotelRoomSchema>;
+const WeskiDistanceSchema = z.object({
+  type: z.string(),
+  distance: z.string(),
+});
 
-/**
- * Schema for the full external API response.
- * Handles both `{ results: [...] }` and `[...]` response shapes.
- */
-export const WeskiExternalResponseSchema = z.union([
-  z.object({ results: z.array(WeskiHotelRoomSchema) }),
-  z.array(WeskiHotelRoomSchema),
-]);
+const WeskiAccommodationSchema = z.object({
+  HotelCode: z.string(),
+  HotelName: z.string(),
+  HotelDescriptiveContent: z
+    .object({
+      Images: z.array(WeskiImageSchema).optional().default([]),
+    })
+    .optional()
+    .default({ Images: [] }),
+  HotelInfo: z.object({
+    Position: z
+      .object({
+        Distances: z.array(WeskiDistanceSchema).optional().default([]),
+      })
+      .optional()
+      .default({ Distances: [] }),
+    Rating: z.string(),
+    Beds: z.string(),
+  }),
+  PricesInfo: z.object({
+    AmountAfterTax: z.string(),
+    AmountBeforeTax: z.string().optional(),
+  }),
+});
+
+export type WeskiAccommodation = z.infer<typeof WeskiAccommodationSchema>;
+
+export const WeskiExternalResponseSchema = z.object({
+  statusCode: z.number(),
+  body: z.object({
+    success: z.string(),
+    accommodations: z.array(WeskiAccommodationSchema),
+  }),
+});
 
 export type WeskiExternalResponse = z.infer<typeof WeskiExternalResponseSchema>;

@@ -1,11 +1,14 @@
 export const HOTELS_PROVIDERS = 'HOTELS_PROVIDERS';
 
+/** Normalized hotel room shape shared across all vendors and sent to the client */
 export interface HotelRoom {
+  hotel_code: string;
   hotel_name: string;
-  room_name: string;
-  meal: string;
+  stars: number;
+  beds: number;
   price: number;
-  adults: number;
+  image_url?: string;
+  ski_lift_distance?: string;
 }
 
 export interface HotelSearchParams {
@@ -18,7 +21,7 @@ export interface HotelSearchParams {
 /**
  * Interface all vendor integrations must implement.
  * Each provider returns rooms for the exact group_size requested.
- * The service is responsible for fanning out across group sizes.
+ * The service fans out across group sizes.
  */
 export interface IHotelsProvider {
   readonly name: string;
