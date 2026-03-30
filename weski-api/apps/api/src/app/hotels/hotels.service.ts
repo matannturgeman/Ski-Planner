@@ -49,9 +49,10 @@ export class HotelsService {
   }
 
   private expandGroupSizes(groupSize: number): number[] {
+    const MAX_GROUP_SIZE = 10;
     return Array.from(
       { length: GROUP_SIZE_EXPANSION + 1 },
       (_, i) => groupSize + i,
-    );
+    ).filter((gs) => gs <= MAX_GROUP_SIZE);
   }
 }

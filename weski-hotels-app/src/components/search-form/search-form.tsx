@@ -27,8 +27,8 @@ const SearchIcon = () => (
 const SearchForm: React.FC = () => {
   const [skiSiteId, setSkiSiteId] = useState<number>(1);
   const [groupSize, setGroupSize] = useState<number>(1);
-  const [startDate, setStartDate] = useState<Date | null>(dayjs('2025-04-03').toDate());
-  const [endDate, setEndDate] = useState<Date | null>(dayjs('2025-04-11').toDate());
+  const [startDate, setStartDate] = useState<Date | null>(dayjs().toDate());
+  const [endDate, setEndDate] = useState<Date | null>(dayjs().add(10, 'day').toDate());
   const [validationError, setValidationError] = useState<string | null>(null);
 
   const [searchHotels, { isLoading }] = useSearchHotelsMutation();
