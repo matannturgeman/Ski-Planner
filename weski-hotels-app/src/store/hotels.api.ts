@@ -26,9 +26,12 @@ export const hotelsApi = createApi({
       queryFn: async (arg, { dispatch, signal }) => {
         dispatch(
           hotelsActions.startSearch({
-            resortName: getResortName(arg.ski_site),
-            dateLabel: formatDateLabel(arg.from_date, arg.to_date),
-            groupSize: arg.group_size,
+            meta: {
+              resortName: getResortName(arg.ski_site),
+              dateLabel: formatDateLabel(arg.from_date, arg.to_date),
+              groupSize: arg.group_size,
+            },
+            params: arg,
           }),
         );
 

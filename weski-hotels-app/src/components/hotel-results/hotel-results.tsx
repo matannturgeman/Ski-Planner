@@ -1,5 +1,6 @@
-import React from 'react';
-import type { HotelRoom } from '../../types/hotels.types';
+import React, { useState, useEffect, useRef } from 'react';
+import type { HotelRoom, HotelSearchRequest } from '../../types/hotels.types';
+import { useSearchHotelsMutation } from '../../store';
 import './hotel-results.scss';
 
 interface LastSearchMeta {
@@ -13,6 +14,7 @@ interface Props {
   isStreaming: boolean;
   error: string | null;
   lastSearch: LastSearchMeta | null;
+  lastSearchParams: HotelSearchRequest | null;
 }
 
 const LocationIcon = () => (
@@ -45,14 +47,42 @@ const HotelCardSkeleton = () => (
   </div>
 );
 
+const PLACEHOLDER = 'https://placehold.co/215x150?text=No+Image';
+
+const HotelImage: React.FC<{ src: string | undefined; alt: string }> = ({ src, alt }) => {
+  const [imgSrc, setImgSrc] = useState<string>(src || PLACEHOLDER);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (!src) return;
+    timerRef.current = setTimeout(() => setImgSrc(PLACEHOLDER), 3000);
+    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+  }, [src]);
+
+  const handleLoad = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+  };
+
+  const handleError = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setImgSrc(PLACEHOLDER);
+  };
+
+  return (
+    <img
+      src={imgSrc}
+      alt={alt}
+      className="hotel-card-img"
+      onLoad={handleLoad}
+      onError={handleError}
+    />
+  );
+};
+
 const HotelCard: React.FC<{ room: HotelRoom; resortName: string }> = ({ room, resortName }) => (
   <div className="hotel-card">
     <div className="hotel-card-image">
-      {room.image_url ? (
-        <img src={room.image_url} alt={room.hotel_name} className="hotel-card-img" />
-      ) : (
-        <div className="hotel-card-img-placeholder" />
-      )}
+      <HotelImage src={room.image_url} alt={room.hotel_name} />
     </div>
     <div className="hotel-card-body">
       <div className="hotel-card-top">
@@ -84,9 +114,24 @@ const HotelCard: React.FC<{ room: HotelRoom; resortName: string }> = ({ room, re
   </div>
 );
 
-const HotelResults: React.FC<Props> = ({ results, isStreaming, error, lastSearch }) => {
+const HotelResults: React.FC<Props> = ({ results, isStreaming, error, lastSearch, lastSearchParams }) => {
+  const [searchHotels, { isLoading }] = useSearchHotelsMutation();
+
   if (error) {
-    return <div className="hotel-results-message hotel-results-error">{error}</div>;
+    return (
+      <div className="hotel-results-message hotel-results-error">
+        {error}
+        {lastSearchParams && (
+          <button
+            className="hotel-results-retry-btn"
+            onClick={() => searchHotels(lastSearchParams)}
+            disabled={isLoading}
+          >
+            Try again
+          </button>
+        )}
+      </div>
+    );
   }
 
   if (!lastSearch) return null;

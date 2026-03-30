@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { HotelRoom } from '../types/hotels.types';
+import type { HotelRoom, HotelSearchRequest } from '../types/hotels.types';
 
 interface LastSearchMeta {
   resortName: string;
@@ -12,6 +12,7 @@ interface HotelsState {
   isStreaming: boolean;
   error: string | null;
   lastSearch: LastSearchMeta | null;
+  lastSearchParams: HotelSearchRequest | null;
 }
 
 const initialState: HotelsState = {
@@ -19,17 +20,19 @@ const initialState: HotelsState = {
   isStreaming: false,
   error: null,
   lastSearch: null,
+  lastSearchParams: null,
 };
 
 const hotelsSlice = createSlice({
   name: 'hotels',
   initialState,
   reducers: {
-    startSearch(state, action: PayloadAction<LastSearchMeta>) {
+    startSearch(state, action: PayloadAction<{ meta: LastSearchMeta; params: HotelSearchRequest }>) {
       state.results = [];
       state.isStreaming = true;
       state.error = null;
-      state.lastSearch = action.payload;
+      state.lastSearch = action.payload.meta;
+      state.lastSearchParams = action.payload.params;
     },
     addBatch(state, action: PayloadAction<HotelRoom[]>) {
       state.results = [...state.results, ...action.payload].sort(
