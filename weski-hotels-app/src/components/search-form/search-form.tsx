@@ -98,17 +98,20 @@ const SearchForm: React.FC = () => {
         {/* Date range */}
         <div className="search-form-date-range">
           <CalendarIcon />
+          <label htmlFor="checkin-date" className="sr-only">Check-in date</label>
           <DatePicker
+            id="checkin-date"
             className="search-form-date-picker"
             selected={startDate}
             onChange={setStartDate}
             enableTabLoop={false}
             placeholderText="Check-in"
             dateFormat="MMM d"
-            inputProps={{ 'aria-label': 'Check-in date' }}
           />
           <span className="date-separator" aria-hidden="true">–</span>
+          <label htmlFor="checkout-date" className="sr-only">Check-out date</label>
           <DatePicker
+            id="checkout-date"
             className="search-form-date-picker"
             selected={endDate}
             onChange={setEndDate}
@@ -116,7 +119,6 @@ const SearchForm: React.FC = () => {
             placeholderText="Check-out"
             minDate={startDate ?? undefined}
             dateFormat="MMM d"
-            inputProps={{ 'aria-label': 'Check-out date' }}
           />
         </div>
 

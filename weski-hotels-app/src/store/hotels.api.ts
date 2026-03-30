@@ -52,7 +52,7 @@ export const hotelsApi = createApi({
         if (!response.ok || !response.body) {
           const message = `Search failed (${response.status})`;
           dispatch(hotelsActions.setError(message));
-          return { error: { status: response.status, error: message } };
+          return { error: { status: response.status, data: message } };
         }
 
         const reader = response.body.getReader();
