@@ -211,3 +211,29 @@
   0%   { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
+
+// ── Mobile responsive ───────────────────────────────────────────────
+
+@media (max-width: 640px) {
+  .hotel-results {
+    padding: 16px 0;
+  }
+
+  .hotel-card {
+    flex-direction: column;
+  }
+
+  .hotel-card-image {
+    width: 100%;
+    min-height: 180px;
+  }
+
+  .hotel-card-img-placeholder {
+    min-height: 180px;
+  }
+
+  .hotel-card-footer {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
