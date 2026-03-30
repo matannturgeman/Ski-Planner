@@ -1,0 +1,18 @@
+@import "react-datepicker/dist/react-datepicker.css";
+
+.search-form {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+
+
+    .search-form-date-picker {
+        background: white;
+        color: black;
+        border-radius: 6px;
+        height: 35px;
+        border: 1px solid #dfe3eb;
+        padding: 0 16px;
+        width: 135px;
+    }
+}
