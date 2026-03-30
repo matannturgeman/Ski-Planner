@@ -1,5 +1,5 @@
 import React from 'react';
-import './search-button.scss';
+import { Button } from '../../../design-system';
 
 interface Props {
   onClick?: () => void;
@@ -8,9 +8,9 @@ interface Props {
 
 const SearchButton: React.FC<Props> = ({ onClick, disabled }) => {
   return (
-    <button className="search-button" onClick={onClick} disabled={disabled}>
+    <Button variant="outline" size="sm" onClick={onClick} disabled={disabled}>
       {disabled ? 'Searching...' : 'Search'}
-    </button>
+    </Button>
   );
 };
 

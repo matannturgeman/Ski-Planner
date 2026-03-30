@@ -1,0 +1,51 @@
+// ── Design Tokens ──────────────────────────────────────────
+// Single source of truth for all visual constants.
+// Consumed as CSS custom properties so any SCSS file can use them.
+
+:root {
+  // ── Colors: Brand ──────────────────────────────────────
+  --color-primary:          #1565c0;
+  --color-primary-hover:    #1254a3;
+  --color-primary-disabled: #7baae0;
+  --color-secondary:        #255cf1;
+  --color-highlight-bg:     #ebf3ff;
+
+  // ── Colors: Text ───────────────────────────────────────
+  --color-text-primary:   #111827;
+  --color-text-secondary: #6b7280;
+  --color-text-muted:     #9ca3af;
+
+  // ── Colors: Borders & Backgrounds ──────────────────────
+  --color-border:       #d1d5db;
+  --color-border-light: #e5e7eb;
+  --color-bg-light:     #f3f4f6;
+  --color-bg-page:      #f7f9ff;
+
+  // ── Colors: Semantic ───────────────────────────────────
+  --color-error:        #dc2626;
+  --color-error-bg:     #fef2f2;
+  --color-error-border: #fecaca;
+  --color-star-filled:  #f59e0b;
+  --color-star-empty:   #d1d5db;
+
+  // ── Border Radius ──────────────────────────────────────
+  --radius-sm:   4px;
+  --radius-md:   6px;
+  --radius-lg:   8px;
+  --radius-pill: 20px;
+
+  // ── Font Sizes ─────────────────────────────────────────
+  --font-size-xs:   12px;
+  --font-size-sm:   13px;
+  --font-size-base: 14px;
+  --font-size-md:   16px;
+  --font-size-lg:   18px;
+  --font-size-xl:   24px;
+
+  // ── Shadows ────────────────────────────────────────────
+  --shadow-card:     0 4px 16px rgba(0, 0, 0, 0.10);
+  --shadow-dropdown: 0 4px 16px rgba(0, 0, 0, 0.12);
+
+  // ── Transitions ────────────────────────────────────────
+  --transition-fast: 0.15s ease;
+}

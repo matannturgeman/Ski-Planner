@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import type { HotelRoom, HotelSearchRequest } from '../../types/hotels.types';
 import { useSearchHotelsMutation } from '../../store';
+import { Button } from '../../design-system';
 import './hotel-results.scss';
 
 interface LastSearchMeta {
@@ -122,13 +123,14 @@ const HotelResults: React.FC<Props> = ({ results, isStreaming, error, lastSearch
       <div className="hotel-results-message hotel-results-error">
         {error}
         {lastSearchParams && (
-          <button
-            className="hotel-results-retry-btn"
+          <Button
+            variant="danger"
+            size="sm"
             onClick={() => searchHotels(lastSearchParams)}
             disabled={isLoading}
           >
             Try again
-          </button>
+          </Button>
         )}
       </div>
     );

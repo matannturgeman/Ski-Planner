@@ -6,6 +6,7 @@ import DatePicker from 'react-datepicker';
 import dayjs from 'dayjs';
 import { useSearchHotelsMutation } from '../../store';
 import { HotelSearchRequestSchema } from '../../types/hotels.types';
+import { Button } from '../../design-system';
 
 const CalendarIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -88,14 +89,15 @@ const SearchForm: React.FC = () => {
         </div>
 
         {/* Search button */}
-        <button
+        <Button
+          variant="primary"
           className="search-form-search-btn"
           onClick={handleSearch}
           disabled={isLoading}
         >
           <SearchIcon />
           {isLoading ? 'Searching...' : 'Search'}
-        </button>
+        </Button>
       </div>
 
       {validationError && (
