@@ -5,7 +5,7 @@ import { useAppSelector } from './store';
 import './App.css';
 
 const App: React.FC = () => {
-  const { results, isStreaming, error, hasSearched } = useAppSelector(
+  const { results, isStreaming, error, lastSearch } = useAppSelector(
     (state) => state.hotels,
   );
 
@@ -17,7 +17,7 @@ const App: React.FC = () => {
           results={results}
           isStreaming={isStreaming}
           error={error}
-          hasSearched={hasSearched}
+          lastSearch={lastSearch}
         />
       </main>
     </div>

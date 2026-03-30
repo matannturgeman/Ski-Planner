@@ -1,29 +1,35 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { HotelRoom } from '../types/hotels.types';
 
+interface LastSearchMeta {
+  resortName: string;
+  dateLabel: string;
+  groupSize: number;
+}
+
 interface HotelsState {
   results: HotelRoom[];
   isStreaming: boolean;
   error: string | null;
-  hasSearched: boolean;
+  lastSearch: LastSearchMeta | null;
 }
 
 const initialState: HotelsState = {
   results: [],
   isStreaming: false,
   error: null,
-  hasSearched: false,
+  lastSearch: null,
 };
 
 const hotelsSlice = createSlice({
   name: 'hotels',
   initialState,
   reducers: {
-    startSearch(state) {
+    startSearch(state, action: PayloadAction<LastSearchMeta>) {
       state.results = [];
       state.isStreaming = true;
       state.error = null;
-      state.hasSearched = true;
+      state.lastSearch = action.payload;
     },
     addBatch(state, action: PayloadAction<HotelRoom[]>) {
       state.results = [...state.results, ...action.payload].sort(

@@ -1,10 +1,8 @@
 .app {
   min-height: 100vh;
-  background-color: #f5f7fa;
+  background-color: #f3f4f6;
 }
 
 .app-main {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 32px 24px;
+  padding: 0 24px;
 }

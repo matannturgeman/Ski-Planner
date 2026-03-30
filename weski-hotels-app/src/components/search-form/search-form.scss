@@ -1,18 +1,132 @@
 @import "react-datepicker/dist/react-datepicker.css";
 
 .search-form {
+  display: flex;
+  align-items: center;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  overflow: visible;
+  background: #fff;
+
+  &-segment {
     display: flex;
-    gap: 12px;
     align-items: center;
+    gap: 8px;
+    padding: 0 16px;
+    height: 44px;
+    border-right: 1px solid #d1d5db;
+    min-width: 0;
+    cursor: pointer;
 
-
-    .search-form-date-picker {
-        background: white;
-        color: black;
-        border-radius: 6px;
-        height: 35px;
-        border: 1px solid #dfe3eb;
-        padding: 0 16px;
-        width: 135px;
+    &:last-of-type {
+      border-right: none;
     }
+
+    svg {
+      flex-shrink: 0;
+      color: #6b7280;
+    }
+  }
+
+  &-label {
+    font-size: 14px;
+    color: #111827;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &-date-range {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    height: 44px;
+    padding: 0 16px;
+    border-right: 1px solid #d1d5db;
+    cursor: pointer;
+
+    svg {
+      flex-shrink: 0;
+      color: #6b7280;
+      margin-right: 4px;
+    }
+  }
+
+  .search-form-date-picker {
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    color: #111827;
+    width: 80px;
+    padding: 0;
+    cursor: pointer;
+
+    &::placeholder {
+      color: #9ca3af;
+    }
+  }
+
+  .date-separator {
+    color: #9ca3af;
+    font-size: 14px;
+    padding: 0 2px;
+  }
+
+  &-search-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 44px;
+    padding: 0 20px;
+    background: #1565c0;
+    color: #fff;
+    border: none;
+    border-radius: 0 7px 7px 0;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease;
+
+    &:hover {
+      background: #1254a3;
+    }
+
+    &:disabled {
+      background: #7baae0;
+      cursor: not-allowed;
+    }
+
+    svg {
+      flex-shrink: 0;
+    }
+  }
+
+  &-error {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 4px;
+    font-size: 12px;
+    color: #dc2626;
+  }
+}
+
+// Radix select trigger inside search form
+.search-form .select-trigger {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  height: auto;
+  font-size: 14px;
+  color: #111827;
+  width: auto;
+  min-width: 110px;
+
+  &:focus {
+    outline: none;
+    box-shadow: none;
+  }
 }

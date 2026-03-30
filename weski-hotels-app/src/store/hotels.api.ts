@@ -1,25 +1,36 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { z } from 'zod';
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { hotelsActions } from './hotels.slice';
 import { HotelRoomSchema, type HotelRoom, type HotelSearchRequest } from '../types/hotels.types';
+import { getResortName } from '../data/resorts';
+
+dayjs.extend(customParseFormat);
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000/api';
 
-/** Batch array schema for validating each SSE data payload */
 const HotelRoomBatchSchema = z.array(HotelRoomSchema);
+
+function formatDateLabel(fromDate: string, toDate: string): string {
+  const from = dayjs(fromDate, 'DD/MM/YYYY').format('MMM D');
+  const to = dayjs(toDate, 'DD/MM/YYYY').format('MMM D');
+  return `${from} - ${to}`;
+}
 
 export const hotelsApi = createApi({
   reducerPath: 'hotelsApi',
   baseQuery: fetchBaseQuery({ baseUrl: BASE_URL }),
   endpoints: (builder) => ({
-    /**
-     * Triggers the SSE stream via POST.
-     * As each vendor result arrives it is dispatched to the hotels slice,
-     * giving the UI live, Skyscanner-style progressive updates.
-     */
     searchHotels: builder.mutation<HotelRoom[], HotelSearchRequest>({
       queryFn: async (arg, { dispatch, signal }) => {
-        dispatch(hotelsActions.startSearch());
+        dispatch(
+          hotelsActions.startSearch({
+            resortName: getResortName(arg.ski_site),
+            dateLabel: formatDateLabel(arg.from_date, arg.to_date),
+            groupSize: arg.group_size,
+          }),
+        );
 
         let response: Response;
         try {
@@ -52,25 +63,26 @@ export const hotelsApi = createApi({
             if (done) break;
 
             buffer += decoder.decode(value, { stream: true });
-
-            // Process complete SSE lines from the buffer
             const lines = buffer.split('\n');
-            buffer = lines.pop() ?? ''; // keep incomplete last line
+            buffer = lines.pop() ?? '';
 
             for (const line of lines) {
               if (!line.startsWith('data: ')) continue;
               const raw = line.slice(6).trim();
               if (!raw || raw === '{}') continue;
 
-              const parsed = HotelRoomBatchSchema.safeParse(JSON.parse(raw));
-              if (parsed.success && parsed.data.length > 0) {
-                allRooms.push(...parsed.data);
-                dispatch(hotelsActions.addBatch(parsed.data));
+              try {
+                const parsed = HotelRoomBatchSchema.safeParse(JSON.parse(raw));
+                if (parsed.success && parsed.data.length > 0) {
+                  allRooms.push(...parsed.data);
+                  dispatch(hotelsActions.addBatch(parsed.data));
+                }
+              } catch {
+                // skip malformed SSE lines
               }
             }
           }
         } catch (err: unknown) {
-          // AbortError is expected when user triggers a new search — treat as normal
           if (err instanceof Error && err.name !== 'AbortError') {
             dispatch(hotelsActions.setError('Stream interrupted'));
           }
