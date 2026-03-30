@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import type { HotelRoom, HotelSearchRequest } from '../../types/hotels.types';
 import { useSearchHotelsMutation } from '../../store';
 import { Button } from '../../design-system';
@@ -121,6 +122,14 @@ const HotelCard: React.FC<{ room: HotelRoom; resortName: string }> = ({ room, re
 
 const HotelResults: React.FC<Props> = ({ results, isStreaming, error, lastSearch, lastSearchParams }) => {
   const [searchHotels, { isLoading }] = useSearchHotelsMutation();
+  const listRef = useRef<HTMLDivElement>(null);
+
+  const virtualizer = useWindowVirtualizer({
+    count: results.length,
+    estimateSize: () => 166, // ~150px card + 16px gap
+    overscan: 3,
+    scrollMargin: listRef.current?.offsetTop ?? 0,
+  });
 
   if (error) {
     return (
@@ -144,6 +153,7 @@ const HotelResults: React.FC<Props> = ({ results, isStreaming, error, lastSearch
   if (!lastSearch) return null;
 
   const showSkeletons = isStreaming && results.length === 0;
+  const virtualItems = virtualizer.getVirtualItems();
 
   return (
     <section className="hotel-results" aria-label="Hotel search results" aria-live="polite" aria-busy={isStreaming}>
@@ -167,22 +177,38 @@ const HotelResults: React.FC<Props> = ({ results, isStreaming, error, lastSearch
         <div className="hotel-results-empty" role="status">No hotels found for your search.</div>
       )}
 
-      <div className="hotel-results-list">
-        {showSkeletons && (
-          <>
-            <HotelCardSkeleton />
-            <HotelCardSkeleton />
-            <HotelCardSkeleton />
-          </>
-        )}
-        {results.map((room) => (
-          <HotelCard
-            key={`${room.hotel_code}-${room.beds}`}
-            room={room}
-            resortName={lastSearch.resortName}
-          />
-        ))}
-      </div>
+      {showSkeletons && (
+        <div className="hotel-results-list hotel-results-list--static">
+          <HotelCardSkeleton />
+          <HotelCardSkeleton />
+          <HotelCardSkeleton />
+        </div>
+      )}
+
+      {results.length > 0 && (
+        <div
+          ref={listRef}
+          className="hotel-results-list"
+          style={{ height: `${virtualizer.getTotalSize()}px` }}
+        >
+          {virtualItems.map((virtualRow) => (
+            <div
+              key={virtualRow.key}
+              data-index={virtualRow.index}
+              ref={virtualizer.measureElement}
+              className="hotel-results-item"
+              style={{
+                transform: `translateY(${virtualRow.start - virtualizer.options.scrollMargin}px)`,
+              }}
+            >
+              <HotelCard
+                room={results[virtualRow.index]}
+                resortName={lastSearch.resortName}
+              />
+            </div>
+          ))}
+        </div>
+      )}
     </section>
   );
 };
